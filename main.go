@@ -6,6 +6,13 @@ import (
   "sync"
 )
 
+func liste() []int {
+  liste := []int
+  for i:= 0; i< 100; i++{
+    liste = append(liste, rand.Intn(100))
+    }
+  return liste
+  }
 //Parallel quicksort version 2 processeur
 func ParallelQSv2(data []int, wg *sync.WaitGroup, channel chan []int) {
   defer wg.Done()
