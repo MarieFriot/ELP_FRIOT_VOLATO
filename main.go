@@ -13,8 +13,26 @@ func bigListeGen() []int {
     liste = append(liste, rand.Intn(100))
     }
   return liste
-  }
+}
+
+
+}
+func main{
+  liste := bigListeGen()
+  var waitGroup sync.WaitGroup
+  channel := make(chan []int)
+  waitGroup.Add(1)
+  go ParallelQSv2(liste, &waitGroup, channel)
+  go func() {
+    waitGroup.Wait()
+    close(channel)
+  }()
+  liste_trie := <-channel
+  fmt.Println("liste_trie", liste_trie)
+}
+
 //Parallel quicksort version 2 processeur
+/*
 func ParallelQSv2(data []int, wg *sync.WaitGroup, channel chan []int) {
   defer wg.Done()
 
@@ -44,21 +62,7 @@ func ParallelQSv2(data []int, wg *sync.WaitGroup, channel chan []int) {
   result = append(result, <- upperCh...)
 
   channel <- result
-  }
-  
 }
-func main{
-  liste := bigListeGen()
-  var waitGroup sync.WaitGroup
-  channel := make(chan []int)
-  waitGroup.Add(1)
-  go ParallelQSv2(liste, &waitGroup, channel)
-  go func() {
-    waitGroup.Wait()
-    close(channel)
-  }()
-  liste_trie := <-channel
-  fmt.Println("liste_trie", liste_trie)
-  }
+*/
   
   
