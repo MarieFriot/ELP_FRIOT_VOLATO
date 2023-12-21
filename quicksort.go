@@ -2,11 +2,7 @@ package quicksort
 
 import "fmt"
 
-func main() {
-	liste := []int{1, 3, 2, 4, 2, 5, 6}
-	quicksort(liste)
-	fmt.Println(liste)
-}
+
 func quicksort(liste []int) {
 	if len(liste) <= 1 {
 		return
