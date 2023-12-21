@@ -6,7 +6,7 @@ import (
   "sync"
 )
 
-func liste() []int {
+func bigListeGen() []int {
   liste := []int
   for i:= 0; i< 100; i++{
     liste = append(liste, rand.Intn(100))
@@ -46,3 +46,18 @@ func ParallelQSv2(data []int, wg *sync.WaitGroup, channel chan []int) {
   }
   
 }
+func main{
+  liste := bigListGen()
+  var waitgroup sync.WaitGroup
+  channel := make(chan []int)
+  waitgroup.ADD(1)
+  go ParallelQuicksort(liste, &waitgroup, channel)
+  go func() {
+    wg.Wait()
+    close(ch)
+  }()
+  liste_trie := <-channel
+  fmt.Println("liste_trie", liste_trie)
+  }
+  
+  
