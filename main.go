@@ -4,6 +4,7 @@ import (
   "fmt"
   "ELP_FRIOT_VOLATO/quicksort" //notre bibliotheque avec la fonction quicksort dedans
   "sync"
+  "math/rand"
 )
 
 func bigListeGen() []int {
