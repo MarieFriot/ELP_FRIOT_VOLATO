@@ -3,7 +3,7 @@ package quicksort
 import "fmt"
 
 
-func quicksort(liste []int) {
+func Quicksort(liste []int) {
 	if len(liste) <= 1 {
 		return
 	}
