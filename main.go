@@ -7,6 +7,6 @@ import (
 
 func main() {
   liste := []int{1,5,9,8,3,6,4,7,2}
-  quicksort(liste)
+  quicksort.Quicksort(liste)
   fmt.Println(liste)
 }
