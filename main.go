@@ -19,12 +19,12 @@ func ParallelQSv2(data []int, wg *sync.WaitGroup, channel chan []int) {
   defer wg.Done()
 
   if len(data) <= 1 {
-    ch <- data
+    channel <- data
     return
   }
 
   var low, high []int
-  low, high := quicksort.Partition(data)
+  low, high = quicksort.Partition(data)
 
   lowerWg := &sync.WaitGroup{}
   upperWg := &sync.WaitGroup{}
@@ -40,10 +40,10 @@ func ParallelQSv2(data []int, wg *sync.WaitGroup, channel chan []int) {
   lowerWg.Wait()
   upperWg.Wait()
 
-  result := append(<- lowerCh, pivot)
+  result := append(<- lowerCh, nil)
   result = append(result, <- upperCh)
 
-  ch <- result
+  channel <- result
   }
   
 }
