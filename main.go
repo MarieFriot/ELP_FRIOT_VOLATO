@@ -1,68 +1,66 @@
-package main 
+package main
 
 import (
-  "fmt"
-  "ELP_FRIOT_VOLATO/quicksort" //notre bibliotheque avec la fonction quicksort dedans
-  "sync"
-  "math/rand"
+	"ELP_FRIOT_VOLATO-Golang/quicksort" //notre bibliotheque avec la fonction quicksort dedans
+	"fmt"
+	"math/rand"
+	"sync"
 )
 
 func bigListeGen() []int {
-  liste := []int
-  for i:= 0; i< 100; i++{
-    liste = append(liste, rand.Intn(100))
-    }
-  return liste
+	liste := []int{}
+	for i := 0; i < 10; i++ {
+		liste = append(liste, rand.Intn(100))
+	}
+	return liste
 }
-
-
-}
-func main{
-  liste := bigListeGen()
-  var waitGroup sync.WaitGroup
-  channel := make(chan []int)
-  waitGroup.Add(1)
-  go ParallelQSv2(liste, &waitGroup, channel)
-  go func() {
-    waitGroup.Wait()
-    close(channel)
-  }()
-  liste_trie := <-channel
-  fmt.Println("liste_trie", liste_trie)
-}
-
-//Parallel quicksort version 2 processeur
-/*
-func ParallelQSv2(data []int, wg *sync.WaitGroup, channel chan []int) {
-  defer wg.Done()
-
-  if len(data) <= 1 {
-    channel <- data
-    return
+func splitList(liste []int)([]int, []int) {
+  milieu int
+  res1 int[]
+  res2 int[]
+  milieu = len(liste)/2
+  for i=0; i< milieu; i++{
+    res1.append(liste[i])
   }
-
-  var low, high []int
-  low, high = quicksort.Partition(data)
-
-  lowerWg := &sync.WaitGroup{}
-  upperWg := &sync.WaitGroup{}
-  lowerCh := make(chan []int)
-  upperCh := make(chan []int)
-
-  lowerWg.Add(1)
-  go ParallelQSv2(low, lowerWg, lowerCh)
-
-  upperWg.Add(1)
-  go ParallelQSv2(high, upperWg, upperCh)
-
-  lowerWg.Wait()
-  upperWg.Wait()
-
-  result := append(<- lowerCh, nil)
-  result = append(result, <- upperCh...)
-
-  channel <- result
+  for i = milieu; i< len(liste); i++{
+    res2.append(liste[i])
+  }
+  return res1,res2
 }
-*/
+
+// Parallel quicksort version 2 processeur
+func ParallelQSv2(data []int) {
+  //séparer liste en deux
+  l1, l2 := splitList(data)
+
+  channel := make(chan int[])
+  var waitGroup sync.WaitGroup
+  waitGroup.Add(2)
   
+  //premiere go routine
+  go func()  {
+    defer waitGroup.Done()
+    l1Low, l1Up :=partition(l1)
+    channel <- l1Up //envoie de la plus grande liste dans le channel
+    l2Low := <-channel //recoit la plus petite liste 
+    
+  }()
+
+  //deuxieme go routine
+  go func() {
+    defer waitGroup.Done()
+    l2Low, l2Up :=partition(l2)
+    channel <- l2Low //envoie de la plus petite liste dans le channel
+    l1Up := <-channel //recoie la plus grande liste 
+  }()
   
+  waitGroup.Wait()
+}
+
+
+
+func main() {
+	liste := bigListeGen()
+	
+	fmt.Println("liste_trie", liste_trie)
+}
