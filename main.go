@@ -41,21 +41,21 @@ func ParallelQSv2(data []int, wg *sync.WaitGroup, channel chan []int) {
   upperWg.Wait()
 
   result := append(<- lowerCh, nil)
-  result = append(result, <- upperCh)
+  result = append(result, <- upperCh...)
 
   channel <- result
   }
   
 }
 func main{
-  liste := bigListGen()
-  var waitgroup sync.WaitGroup
+  liste := bigListeGen()
+  var waitGroup sync.WaitGroup
   channel := make(chan []int)
-  waitgroup.ADD(1)
-  go ParallelQuicksort(liste, &waitgroup, channel)
+  waitGroup.ADD(1)
+  go ParallelQSv2(liste, &waitGroup, channel)
   go func() {
-    wg.Wait()
-    close(ch)
+    waitGroup.Wait()
+    close(channel)
   }()
   liste_trie := <-channel
   fmt.Println("liste_trie", liste_trie)
