@@ -40,5 +40,7 @@ func Partition(liste []int) ([]int, []int) {
 		}
 	}
 
+	liste1 = append(liste1, pivot)
+
 	return liste1, liste2
 }
