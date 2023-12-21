@@ -1,8 +1,5 @@
 package quicksort
 
-import "fmt"
-
-
 func Quicksort(liste []int) {
 	if len(liste) <= 1 {
 		return
