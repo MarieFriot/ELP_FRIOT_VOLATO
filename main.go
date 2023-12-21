@@ -2,7 +2,7 @@ package main
 
 import (
   "fmt"
-  "quicksort" //notre bibliotheque avec la fonction quicksort dedans
+  "ELP_FRIOT_VOLATO/quicksort" //notre bibliotheque avec la fonction quicksort dedans
 )
 
 func main() {
