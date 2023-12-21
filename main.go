@@ -51,7 +51,7 @@ func main{
   liste := bigListeGen()
   var waitGroup sync.WaitGroup
   channel := make(chan []int)
-  waitGroup.ADD(1)
+  waitGroup.Add(1)
   go ParallelQSv2(liste, &waitGroup, channel)
   go func() {
     waitGroup.Wait()
