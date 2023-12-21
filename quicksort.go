@@ -18,8 +18,8 @@ func Quicksort(liste []int) {
 			liste2 = append(liste2, liste[i])
 		}
 	}
-	quicksort(liste1)
-	quicksort(liste2)
+	Quicksort(liste1)
+	Quicksort(liste2)
 
 	liste1 = append(liste1, pivot)
 	liste1 = append(liste1, liste2...) //... décompose les elements individuels de liste2 et les ajoute à liste1
