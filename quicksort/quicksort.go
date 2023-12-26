@@ -57,6 +57,7 @@ func QuicksortSeq(liste []int) {
 
 }
 
+// coupe une liste en deux avec un liste d'element inferieur au pivot et une superieur au pivot, les deux listes ne sont pas range.
 func Partition(liste []int, pivot int, wg *sync.WaitGroup) ([]int, []int) {
 	defer wg.Done()
 	var liste1, liste2 []int
