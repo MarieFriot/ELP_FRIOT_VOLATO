@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 	"sync"
-	"test_quicksort_para/quicksort"
+	"ELP_FRIOT_VOLATO-Golang/quicksort"
 	"time"
 )
 
