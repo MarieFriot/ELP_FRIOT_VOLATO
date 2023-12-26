@@ -1,66 +1,81 @@
 package main
 
 import (
-	"ELP_FRIOT_VOLATO-Golang/quicksort" //notre bibliotheque avec la fonction quicksort dedans
 	"fmt"
 	"math/rand"
 	"sync"
+	"test_quicksort_para/quicksort"
+	"time"
 )
 
-func bigListeGen() []int {
+func splitList(liste []int) ([]int, []int) {
+	milieu := len(liste) / 2
+	return liste[:milieu], liste[milieu:]
+}
+
+func bigListeGen(size int) []int {
 	liste := []int{}
-	for i := 0; i < 10; i++ {
-		liste = append(liste, rand.Intn(100))
+	for i := 0; i < size; i++ {
+		liste = append(liste, rand.Intn(1000))
 	}
 	return liste
 }
-func splitList(liste []int)([]int, []int) {
-  milieu int
-  res1 int[]
-  res2 int[]
-  milieu = len(liste)/2
-  for i=0; i< milieu; i++{
-    res1.append(liste[i])
-  }
-  for i = milieu; i< len(liste); i++{
-    res2.append(liste[i])
-  }
-  return res1,res2
+
+func QuicksortParallel(liste []int) []int {
+	var wg sync.WaitGroup
+
+	if len(liste) <= 1 {
+		return liste
+	}
+	l1, l2 := splitList(liste)
+	pivot := liste[0]
+
+	l1Ch := make(chan struct{ l1Low, l1Up []int })
+	l2Ch := make(chan struct{ l2Low, l2Up []int })
+
+	wg.Add(2)
+	go func() {
+		l1Low, l1Up := quicksort.Partition(l1, pivot, &wg)
+		l1Ch <- struct{ l1Low, l1Up []int }{l1Low, l1Up}
+	}()
+	go func() {
+		l2Low, l2Up := quicksort.Partition(l2, pivot, &wg)
+		l2Ch <- struct{ l2Low, l2Up []int }{l2Low, l2Up}
+	}()
+	wg.Wait()
+
+	result1 := <-l1Ch
+	result2 := <-l2Ch
+
+	lLow := append(result1.l1Low, result2.l2Low...)
+	lUp := append(result1.l1Up, result2.l2Up...)
+
+	wg.Add(2)
+	go quicksort.Quicksort(lLow, &wg)
+	go quicksort.Quicksort(lUp, &wg)
+	wg.Wait()
+
+	lLow = append(lLow, lUp...)
+	return lLow
+
 }
-
-// Parallel quicksort version 2 processeur
-func ParallelQSv2(data []int) {
-  //séparer liste en deux
-  l1, l2 := splitList(data)
-
-  channel := make(chan int[])
-  var waitGroup sync.WaitGroup
-  waitGroup.Add(2)
-  
-  //premiere go routine
-  go func()  {
-    defer waitGroup.Done()
-    l1Low, l1Up :=partition(l1)
-    channel <- l1Up //envoie de la plus grande liste dans le channel
-    l2Low := <-channel //recoit la plus petite liste 
-    
-  }()
-
-  //deuxieme go routine
-  go func() {
-    defer waitGroup.Done()
-    l2Low, l2Up :=partition(l2)
-    channel <- l2Low //envoie de la plus petite liste dans le channel
-    l1Up := <-channel //recoie la plus grande liste 
-  }()
-  
-  waitGroup.Wait()
-}
-
-
 
 func main() {
-	liste := bigListeGen()
-	
-	fmt.Println("liste_trie", liste_trie)
+	liste3 := bigListeGen(100000)
+	liste4 := make([]int, len(liste3))
+	copy(liste4, liste3)
+
+	startTime := time.Now()
+	result := QuicksortParallel(liste3)
+	endTime := time.Now()
+	duration := endTime.Sub(startTime)
+	fmt.Printf("Temps d'exécution parralllele : %v\n", duration)
+	fmt.Println(result[0])
+
+	startTime = time.Now()
+	quicksort.QuicksortSeq(liste4)
+	endTime = time.Now()
+	duration = endTime.Sub(startTime)
+	fmt.Printf("Temps d'exécution sequentiel : %v\n", duration)
+
 }
