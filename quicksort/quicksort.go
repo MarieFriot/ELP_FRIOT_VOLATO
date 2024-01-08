@@ -4,6 +4,11 @@ import (
 	"sync"
 )
 
+func splitList(liste []int) ([]int, []int) {
+	milieu := len(liste) / 2
+	return liste[:milieu], liste[milieu:]
+}
+
 func Quicksort(liste []int, wg *sync.WaitGroup) {
 	defer wg.Done() //wg externe décrementé qu'une fois car les appels récursifs se font avec un autre
 	if len(liste) <= 1 {
@@ -33,6 +38,47 @@ func Quicksort(liste []int, wg *sync.WaitGroup) {
 
 }
 
+func QuicksortParallel(liste []int) []int {
+	var wg sync.WaitGroup
+
+	if len(liste) <= 1 {
+		return liste
+	}
+
+	lLow := []int{}
+	lUp := []int{}
+
+	lowCh := make(chan []int, 2)
+	upCh := make(chan []int, 2)
+
+	go func() {
+		for i := 0; i < 2; i++ {
+			l1 := <-lowCh
+			l2 := <-upCh
+			lLow = append(lLow, l1...)
+			lUp = append(lUp, l2...)
+			//fmt.Println("Received low:", l1)
+			//fmt.Println("Received up:", l2)
+		}
+	}()
+
+	l1, l2 := splitList(liste)
+	pivot := liste[0]
+
+	wg.Add(2)
+	go Partition(l1, pivot, &wg, lowCh, upCh)
+	go Partition(l2, pivot, &wg, lowCh, upCh)
+	wg.Wait()
+
+	wg.Add(2)
+	go Quicksort(lLow, &wg)
+	go Quicksort(lUp, &wg)
+	wg.Wait()
+
+	lLow = append(lLow, lUp...)
+	return lLow
+}
+
 // /version sequentielle
 func QuicksortSeq(liste []int) {
 	if len(liste) <= 1 {
@@ -57,9 +103,9 @@ func QuicksortSeq(liste []int) {
 
 }
 
-// coupe une liste en deux avec un liste d'element inferieur au pivot et une superieur au pivot, les deux listes ne sont pas range.
-func Partition(liste []int, pivot int, wg *sync.WaitGroup) ([]int, []int) {
+func Partition(liste []int, pivot int, wg *sync.WaitGroup, chLow chan []int, chUp chan []int) {
 	defer wg.Done()
+	print("start")
 	var liste1, liste2 []int
 	for i := 0; i < len(liste); i++ {
 		if liste[i] <= pivot {
@@ -68,5 +114,8 @@ func Partition(liste []int, pivot int, wg *sync.WaitGroup) ([]int, []int) {
 			liste2 = append(liste2, liste[i])
 		}
 	}
-	return liste1, liste2
+	chLow <- liste1
+	chUp <- liste2
+	print("done")
+
 }
