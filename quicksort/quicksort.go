@@ -1,12 +1,23 @@
 package quicksort
 
 import (
+	"fmt"
 	"sync"
 )
 
-func splitList(liste []int) ([]int, []int) {
-	milieu := len(liste) / 2
-	return liste[:milieu], liste[milieu:]
+func splitList(liste []int, listNumber int) [][]int {
+	res := make([][]int, listNumber)
+	separator := []int{}
+	for i := 1; i < listNumber; i++ {
+		separator = append(separator, len(liste)/listNumber*i)
+	}
+	fmt.Println(separator)
+	res[0] = liste[:separator[0]]
+	for i := 1; i < listNumber-1; i++ {
+		res[i] = liste[separator[i-1]:separator[i]]
+	}
+	res[listNumber-1] = liste[separator[listNumber-2]:]
+	return res
 }
 
 func Quicksort(liste []int, wg *sync.WaitGroup) {
@@ -38,36 +49,35 @@ func Quicksort(liste []int, wg *sync.WaitGroup) {
 
 }
 
-func QuicksortParallel(liste []int) []int {
+func QuicksortParallel(liste []int, listNumber int) []int {
 	var wg sync.WaitGroup
 
 	if len(liste) <= 1 {
 		return liste
 	}
-
-	lLow := []int{}
-	lUp := []int{}
+	tab := splitList(liste, listNumber)
+	pivot := liste[0]
 
 	lowCh := make(chan []int, 2)
 	upCh := make(chan []int, 2)
 
+	lLow := []int{}
+	lUp := []int{}
+
 	go func() {
-		for i := 0; i < 2; i++ {
+		for i := 0; i < listNumber; i++ {
 			l1 := <-lowCh
 			l2 := <-upCh
 			lLow = append(lLow, l1...)
 			lUp = append(lUp, l2...)
-			//fmt.Println("Received low:", l1)
-			//fmt.Println("Received up:", l2)
 		}
 	}()
 
-	l1, l2 := splitList(liste)
-	pivot := liste[0]
+	wg.Add(listNumber)
+	for i := 0; i < listNumber; i++ {
+		go Partition(tab[i], pivot, &wg, lowCh, upCh)
+	}
 
-	wg.Add(2)
-	go Partition(l1, pivot, &wg, lowCh, upCh)
-	go Partition(l2, pivot, &wg, lowCh, upCh)
 	wg.Wait()
 
 	wg.Add(2)
@@ -77,6 +87,7 @@ func QuicksortParallel(liste []int) []int {
 
 	lLow = append(lLow, lUp...)
 	return lLow
+
 }
 
 // /version sequentielle
