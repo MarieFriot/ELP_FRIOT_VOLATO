@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func test_client() []int {
+func client() []int {
 	// Connect to the server [Done]
 	conn, err := net.Dial("tcp", "localhost:8080")
 	if err != nil {
