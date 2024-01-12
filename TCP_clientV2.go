@@ -15,7 +15,7 @@ func bigListeGen(size int) []int {
 	return liste
 }
 
-func test_client() []int {
+func client() []int {
 	// Connect to the server
 	conn, err := net.Dial("tcp", "localhost:8080")
 	if err != nil {
