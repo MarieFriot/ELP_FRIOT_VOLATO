@@ -26,6 +26,8 @@ func Quicksort(liste []int, wg *sync.WaitGroup) {
 		}
 	}
 
+
+	///On peut également faire les aapppeles récursifs sans créer de go routines pour gagner du temps !
 	var wgInner sync.WaitGroup
 	wgInner.Add(2)
 	go Quicksort(liste1, &wgInner)
@@ -40,6 +42,7 @@ func Quicksort(liste []int, wg *sync.WaitGroup) {
 
 func QuicksortParallel(liste []int) []int {
 	var wg sync.WaitGroup
+	var wgCom sync.WaitGroup
 
 	if len(liste) <= 1 {
 		return liste
@@ -51,6 +54,7 @@ func QuicksortParallel(liste []int) []int {
 	lowCh := make(chan []int, 2)
 	upCh := make(chan []int, 2)
 
+	wgCom.Add(1)
 	go func() {
 		for i := 0; i < 2; i++ {
 			l1 := <-lowCh
@@ -60,6 +64,7 @@ func QuicksortParallel(liste []int) []int {
 			//fmt.Println("Received low:", l1)
 			//fmt.Println("Received up:", l2)
 		}
+		defer wgCom.Done()
 	}()
 
 	l1, l2 := splitList(liste)
@@ -69,6 +74,7 @@ func QuicksortParallel(liste []int) []int {
 	go Partition(l1, pivot, &wg, lowCh, upCh)
 	go Partition(l2, pivot, &wg, lowCh, upCh)
 	wg.Wait()
+	wgCom.Wait()
 
 	wg.Add(2)
 	go Quicksort(lLow, &wg)
