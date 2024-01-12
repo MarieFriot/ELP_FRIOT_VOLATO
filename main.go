@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"runtime"
 	"test_quicksort_parav2/quicksort"
 	"time"
 )
@@ -22,7 +23,8 @@ func main() {
 	//fmt.Println(liste3)
 
 	startTime := time.Now()
-	result := quicksort.QuicksortParallel(liste3, 10)
+	listnumber := runtime.NumCPU() / 2
+	result := quicksort.QuicksortParallel(liste3, listnumber)
 	endTime := time.Now()
 	duration := endTime.Sub(startTime)
 	fmt.Printf("Temps d'exécution parralllele : %v\n", duration)
