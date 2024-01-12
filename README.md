@@ -1,7 +1,2 @@
 # GO_FRIOT_VOLATO
-
-Pour pouvoir se servir du code, il fauy rentrer la ligne de code suivante dans votre terminal lorsque vous etes au meme niveau dans vos fichier que notre fichier main.go
-
-- go mod init quicksort
-
-cela permettra l'utilisation de nos fonctions placer dans notre bibliotheque quicksort.
+On créer un serveur. On créer un client qui génère une grande liste de nombre entier et qui l'envoie au serveur. Lors de la réception de la liste, le serveur partitionne les valeurs recues au fur et à mesure de leur réception en deux liste par rapport à une valeur pivot. Une fois les deux liste recues, nous appliquons le quicksort en parallele sur les listes. Le serveur réasssemble les deux listes triées en une même liste triée et la renvoie au client. 
