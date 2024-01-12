@@ -69,7 +69,7 @@ func handleClient(conn net.Conn) {
 	fmt.Println("Data treated and response sent successfully")
 }
 
-func test_server() {
+func server() {
 	// Listen for incoming connections
 	listener, err := net.Listen("tcp", "localhost:8080")
 	if err != nil {
