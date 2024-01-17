@@ -5,6 +5,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"net"
+	"runtime"
 )
 
 func handleClient(conn net.Conn) {
