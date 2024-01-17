@@ -57,12 +57,15 @@ func Quicksort(liste []int, wg *sync.WaitGroup) {
 		}
 	}
 
+
 	//Ou faire des appels récursifs de Quicksort avec un waitgroup
 	//var wgInner sync.WaitGroup
 	//wgInner.Add(2)
 	QuicksortSeq(liste1)
 	QuicksortSeq(liste2)
 	//wgInner.Wait()
+
+
 
 	//On ajoute a la liste1 le pivot
 	liste1 = append(liste1, pivot)
@@ -73,9 +76,11 @@ func Quicksort(liste []int, wg *sync.WaitGroup) {
 
 }
 
+
 func QuicksortParallel(liste []int, listNumber int) []int {
 	var wgPartition sync.WaitGroup
 	var wgLecture sync.WaitGroup
+
 
 	// Si la taille de la liste est plus petit au égale à 1 on a rien à faire
 	if len(liste) <= 1 {
@@ -89,6 +94,7 @@ func QuicksortParallel(liste []int, listNumber int) []int {
 	lowCh := make(chan []int, 2)
 	upCh := make(chan []int, 2)
 
+
 	// lLow va contenir toutes les valeurs de la liste à trier inférieurs au pivot
 	lLow := []int{}
 	//lUp va contenir toutes les valeurs de la liste à trier supérieurs au pivot
@@ -96,6 +102,7 @@ func QuicksortParallel(liste []int, listNumber int) []int {
 
 	// On créer une go routine pour lire les listes résultats envoyées dans les canneaux
 	wgLecture.Add(1)
+
 	go func() {
 		for i := 0; i < listNumber; i++ {
 			l1 := <-lowCh
@@ -103,11 +110,14 @@ func QuicksortParallel(liste []int, listNumber int) []int {
 			lLow = append(lLow, l1...)
 			lUp = append(lUp, l2...)
 		}
+
 		defer wgLecture.Done()
+
 	}()
 
 	// On choisit le pivot autour duquel toutes les listes vont être partitionnées
 	pivot := liste[0]
+
 
 	// On créer un nombre de go routine correspondant au nombre de sous-liste pour partitionner
 	// chaques sous liste au tour de la valeur pivot
