@@ -26,7 +26,7 @@ func handleClient(conn net.Conn) {
 	var iteration int
 	iteration = sizeData / intInBuff
 
-	// Doing the partition step and read data from client.
+	// Doing the first partition while reading the data from client.
 	var l1 []int
 	var l2 []int
 	var pivot int
@@ -34,6 +34,7 @@ func handleClient(conn net.Conn) {
 
 		buffRecep := make([]byte, 4)
 
+		//case of the last loop, int in buffer needs to be set as the amount of int left
 		if i == iteration && (sizeData%intInBuff) != 0 {
 			buffRecep = make([]byte, 4*(sizeData-i*intInBuff))
 			_, err := conn.Read(buffRecep)
@@ -41,7 +42,7 @@ func handleClient(conn net.Conn) {
 				fmt.Println("Error reading data:", err)
 				return
 			}
-
+			// Convert bytes into int then partition based on a pivot
 			for j := 0; j < 4*(sizeData-i*intInBuff); j += 4 {
 				val := int(binary.BigEndian.Uint32(buffRecep[j : j+4]))
 
@@ -55,7 +56,7 @@ func handleClient(conn net.Conn) {
 					l2 = append(l2, val)
 				}
 			}
-
+		  //in last loop still, if we had a multiple of intInBuff, then there is no data left so we do nothing
 		} else if i == iteration && (sizeData%intInBuff) == 0 {
 			fmt.Println("Nothing to be done on final iteration.")
 		} else {
@@ -97,7 +98,7 @@ func handleClient(conn net.Conn) {
 	for i := 0; i <= iteration; i++ {
 
 		buffAns := make([]byte, 0)
-
+		// on last loop we follow the same logic as when receiving for the size of the buffer
 		if i == iteration && (sizeData%intInBuff) != 0 {
 			buffAns = make([]byte, 4*(sizeData-i*intInBuff))
 			for j, v := range data[i*intInBuff : sizeData] {
@@ -106,7 +107,7 @@ func handleClient(conn net.Conn) {
 		} else if i == iteration && (sizeData%intInBuff) == 0 {
 			fmt.Println("Nothing to be done on final iteration.")
 		} else {
-			// Conversion into bytes for buffer
+			// Conversion int into bytes for buffer
 			buffAns = make([]byte, 4*intInBuff)
 			for j, v := range data[i*intInBuff : (i+1)*intInBuff] {
 				binary.BigEndian.PutUint32(buffAns[j*4:], uint32(v))
