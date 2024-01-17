@@ -51,11 +51,12 @@ func clientV2(size int) []int {
 
 		buffSend := make([]byte, 0)
 
+		//case of the last loop, int in buffer needs to be set as the amount of int left
 		if i == iteration && (sizeData%intInBuff) != 0 {
 			for j, v := range data[i*intInBuff : sizeData] {
 				binary.BigEndian.PutUint32(buffSend[j*4:], uint32(v))
 			}
-		} else if i == iteration && (sizeData%intInBuff) == 0 {
+		} else if i == iteration && (sizeData%intInBuff) == 0 { //in last loop still, if we had a multiple of intInBuff, then there is no data left so we do nothing
 			fmt.Println("Nothing to be done on final iteration.")
 		} else {
 			// Conversion into bytes for buffer
@@ -73,7 +74,7 @@ func clientV2(size int) []int {
 		}
 	}
 
-	// Read and process data from the server and convert the binary data back to integersm [TBD]
+	// Read and process data from the server and convert the binary data back to integers.
 	var dataTreated []int
 	for i := 0; i <= iteration; i++ {
 
