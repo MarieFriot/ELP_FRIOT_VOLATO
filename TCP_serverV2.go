@@ -86,8 +86,9 @@ func handleClient(conn net.Conn) {
 	fmt.Println("Data fully received, initiating treatment.")
 
 	// Perform treatment on data
-	result1 := quicksort.QuicksortParallel(l1)
-	result2 := quicksort.QuicksortParallel(l2)
+	listnumber := runtime.NumCPU()
+	result1 := quicksort.QuicksortParallel(l1,listnumber)
+	result2 := quicksort.QuicksortParallel(l2,listnumber)
 
 	var data []int
 	data = append(data, result1...)
