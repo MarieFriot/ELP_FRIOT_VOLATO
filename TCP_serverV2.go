@@ -87,7 +87,7 @@ func handleClient(conn net.Conn) {
 	fmt.Println("Data fully received, initiating treatment.")
 
 	// Perform treatment on data
-	listnumber := runtime.NumCPU()/4
+	listnumber := runtime.NumCPU()/2 //On aura listnumber goroutines pour partitionner 
 	result1 := quicksort.QuicksortParallel(l1,listnumber)
 	result2 := quicksort.QuicksortParallel(l2,listnumber)
 
