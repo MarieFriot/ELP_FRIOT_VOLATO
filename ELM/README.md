@@ -4,4 +4,4 @@ Ensuite, le joueur doit essayer de trouver le mot correspondant puis doit écrir
 Si il a juste  on affiche Got it! It is indeed XXX. Si il a faux, rien ne se passe.
 Pour finir, le joueur peut demander de voir la réponse à l'aide du bouton "show answer" puis de la cacher à l'aide du bouton "hide answer".
 
-Le model peut avoir trois états : Loading quand il charge, Error si il y a une erreur sur la récupération du mot ou de sa définition et Guessing quand le joueur peut jouer.
+Le modèle  peut avoir trois états : Loading quand il charge, Error si il y a une erreur sur la récupération du mot ou de sa définition et Guessing quand le joueur peut jouer.
