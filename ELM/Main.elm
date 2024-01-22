@@ -164,21 +164,21 @@ subscriptions model =
 view model =
     let
         viewDef line =
-            li [] [ text line ]
+            li [ Html.Attributes.style "font-style" "normal"] [ text line ]
 
         viewMeaning meaning =
             ul []
-                [ li []
+                [ li [ Html.Attributes.style "font-style" "italic"]
                     [ text meaning.partOfSpeech
                     , ol [] (List.map viewDef meaning.defs) 
                     ] --ol liste avec numéro List.map applique viewDef sur toutes les lignes
                 ]
         guessingView =
             div []
-                [ h1 [] [ text model.title ]
-                , p [] [ text "Meanings:" ]
-                , ul [] (List.map viewMeaning model.definitions)
-                , h3 [] [ text model.question ]
+                [ h1 [ Html.Attributes.style "font-family" "Didot" ] [ text model.title ]
+                , h4 [Html.Attributes.style "font-family" "Didot" ] [ text "Meanings:" ]
+                , ul [Html.Attributes.style "font-family" "Didot"] (List.map viewMeaning model.definitions)
+                , h3 [Html.Attributes.style "font-family" "Didot"] [ text model.question ]
                 , input [ onInput Guessed ] []
                 , div []
                   [button [ onClick ShowAnswer ] [ text " Show answer" ]
