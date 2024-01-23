@@ -4,4 +4,4 @@ Ensuite, le joueur doit essayer de trouver le mot correspondant puis doit écrir
 Si il a juste  on affiche Got it! It is indeed XXX. Si il a faux, rien ne se passe.
 Pour finir, le joueur peut demander de voir la réponse à l'aide du bouton "show answer" puis de la cacher à l'aide du bouton "hide answer".
 
-Le modèle  peut avoir trois états : Loading quand il charge, Error si il y a une erreur sur la récupération du mot ou de sa définition et Guessing quand le joueur peut jouer.
+Pour visualiser le jeu, il faut après avor crée un nouveau projet en tapant elm init dans le shell et avoir mit MAIN.elm et dico.txt dans le répertoire src, lancer elm reactor. Si besoin, il faut installer les librairies elm/random et elm/json.
