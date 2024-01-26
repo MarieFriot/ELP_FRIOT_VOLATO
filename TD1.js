@@ -18,6 +18,18 @@ const randomItem = arr => {
 	const index = (Math.random() * arr.length) | 0;
 	return arr.splice(index,1)[0];};
 
+function pioche1(arr,  callback){
+	Array.from({ length: 1 }).forEach(() => {
+		arr.push(randomItem(Letters));
+	});
+	console.log("Voici ta pioche")
+	console.log(arr);
+	if (callback){
+		callback();
+	}
+
+}
+
 function pioche(arr, callback) {
 	if(tourNumber <2){
 		Array.from({ length: 6 }).forEach(() => {
@@ -34,26 +46,19 @@ function pioche(arr, callback) {
 			let card;
 			if (result.Answer == "oui"){
 				card = 1;
-				Array.from({ length: card }).forEach(() => {
-					arr.push(randomItem(Letters));
-				})
-				console.log("Voici ta pioche")
-				console.log(arr);
-				if (callback){
-					callback();
-		  		}
 			}else{
 				card = 3;
 				let lettres = result.Answer.split('');
 				arr = arr.filter(letter => !lettres.includes(letter));
-				Array.from({ length: card }).forEach(() => {
-					arr.push(randomItem(Letters));
-				})
-				console.log("Voici ta pioche")
-				console.log(arr);
-				if (callback){
-					callback();
-		  		}
+				
+		  	}
+			Array.from({ length: card }).forEach(() => {
+				arr.push(randomItem(Letters));
+			});
+			console.log("Voici ta pioche")
+			console.log(arr);
+			if (callback){
+				callback();
 			}
 		});
 	}
@@ -119,7 +124,7 @@ function playAgain(nameJoueur){
 			}
 		}
 		else{
-			pioche(playerPile, 1 , function(){askWord(nameJoueur);});
+			pioche1(playerPile, function(){askWord(nameJoueur);});
 		}
 	});
 }
