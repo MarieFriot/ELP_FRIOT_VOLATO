@@ -18,17 +18,47 @@ const randomItem = arr => {
 	const index = (Math.random() * arr.length) | 0;
 	return arr.splice(index,1)[0];};
 
-function pioche(arr, n, callback) {
-    Array.from({ length: n }).forEach(() => {
-        arr.push(randomItem(Letters));
-    });
-   console.log("Voici ta pioche")
-   console.log(arr);
-   if (callback){
-	callback();
-   }
-
+function pioche(arr, callback) {
+	if(tourNumber <2){
+		Array.from({ length: 6 }).forEach(() => {
+			arr.push(randomItem(Letters));
+		});
+		console.log("Voici ta pioche")
+		console.log(arr);
+		if (callback){
+			callback();
+		  }
+	}else{
+		console.log("Veux tu piocher 1 lettres [oui/non]. Si non dis moi les 3 lettres que tu veux échanger")
+		prompt.get(['Answer'], function(err, result){
+			let card;
+			if (result.Answer == "oui"){
+				card = 1;
+				Array.from({ length: card }).forEach(() => {
+					arr.push(randomItem(Letters));
+				})
+				console.log("Voici ta pioche")
+				console.log(arr);
+				if (callback){
+					callback();
+		  		}
+			}else{
+				card = 3;
+				let lettres = result.Answer.split('');
+				arr = arr.filter(letter => !lettres.includes(letter));
+				Array.from({ length: card }).forEach(() => {
+					arr.push(randomItem(Letters));
+				})
+				console.log("Voici ta pioche")
+				console.log(arr);
+				if (callback){
+					callback();
+		  		}
+			}
+		});
+	}
 }
+			
 
 function newLetter(word, oldWord) {
     const newLetters = [];
@@ -81,6 +111,7 @@ function playAgain(nameJoueur){
 	console.log("Veux tu continuer ? [oui/non]");
 	prompt.get(['answer'], function(err, result){
 		if (result.answer == "non"){
+			tourNumber = tourNumber +1;
 			if(nameJoueur == "1"){
 				tour("2");}
 			else{
@@ -112,6 +143,14 @@ function askWord(nameJoueur,callback){
 		console.log(grille);
 		playerPile = removePioche(result.mot, playerPile, oldWord);
 		console.log(playerPile);
+		if (nameJoueur == "1"){
+			grille1 = grille;
+			playerPile1 = playerPile;
+		}
+		else{
+			grille2 = grille;
+			playerPile2 = playerPile;
+		}
 	 	fs.writeFile('test.txt', result.mot, (err) => {
         	if (err) {
             	console.error(err);
@@ -135,10 +174,12 @@ function tour(nameJoueur,callback){
 	else{
 	       playerPile = playerPile2;
 	}
-	pioche(playerPile, 6 , function(){askWord(nameJoueur);});
+	
+	pioche(playerPile, function(){askWord(nameJoueur);});
 	if (callback){
 		callback();
 	}
 }
 
+var tourNumber = 0;
 tour("1");
