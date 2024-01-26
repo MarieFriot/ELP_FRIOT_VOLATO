@@ -27,32 +27,50 @@ function pioche(arr, n, callback) {
 
 }
 
+function removePioche( word, playerPile){
+	let piocheArray = playerPile.slice();
+	piocheArray = piocheArray.filter(lettre => !word.includes(lettre));
+	return piocheArray;
+}
+
+function playAgain(){
+	console.log("Veux tu continuer ? [oui/non]");
+	prompt.get(['answer'], function(err, result){
+		if (result.answer == "non"){
+			return;
+		}
+		else{
+			pioche(playerPile1, 1 , function(){askWord();});
+		}
+	});
+}
+
 
 function askWord(callback){
 	console.log("Voici ta grille")
 	console.log(grille1);
 	prompt.get(['ligne', 'mot'], function(err, result){
-		console.log('Tu vas écrire sir la ligne'+ result.ligne);
-		console.log("Tu vas écrire le mot" + result.mot);
 		grille1[parseInt(result.ligne)-1] = result.mot;
 		console.log(grille1);
+		playerPile1 = removePioche(result.mot, playerPile1);
+		console.log(playerPile1);
 	 	fs.writeFile('test.txt', result.mot, (err) => {
         	if (err) {
             	console.error(err);
         	} else {
-            	console.log('Le fichier a été correctement écrit.')
+            	console.log('Le fichier a étécorrectement écrit.');
+		playAgain();
 		if (callback){
 			callback();
 		};
         	}
     	});
-});
+})
 }
 
 function tour(nameJoueur){
 	console.log("C'est au joueur " + nameJoueur + "de jouer");
 	pioche(playerPile1, 6 , function(){askWord();});
-	
 }
 
 tour("Joueur1");
