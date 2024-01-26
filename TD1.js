@@ -9,16 +9,19 @@ let Apparitions = [
 ];
 
 let Letters = Apparitions.flatMap(([amount, letter]) => Array.from({ length: amount }, () => letter))
-var listeLettres = [ "A","B", "C","D"];
 var grille1 = Array(8).fill("")
 var grille2 = Array(8).fill("")
 var playerPile1 = []
 var playerPile2 = []
 
-const randomItem = arr => arr.splice((Math.random() * arr.length) | 0, 1);
+const randomItem = arr => {
+	const index = (Math.random() * arr.length) | 0;
+	return arr.splice(index,1)[0];};
 
 function pioche(arr, n, callback) {
-   arr.push(...Array.from({ length: n }, () => randomItem(Letters)));
+    Array.from({ length: n }).forEach(() => {
+        arr.push(randomItem(Letters));
+    });
    console.log("Voici ta pioche")
    console.log(arr);
    if (callback){
@@ -27,39 +30,90 @@ function pioche(arr, n, callback) {
 
 }
 
-function removePioche( word, playerPile){
-	let piocheArray = playerPile.slice();
-	piocheArray = piocheArray.filter(lettre => !word.includes(lettre));
-	return piocheArray;
+function newLetter(word, oldWord) {
+    const newLetters = [];
+    const wordArray = word.split('');
+    const oldWordSet = new Set(oldWord);;
+
+    wordArray.forEach(letter => {
+        if (!oldWordSet.has(letter)) {
+            newLetters.push(letter);
+        }
+    });
+
+    return newLetters;
 }
 
-function playAgain(){
+function removePioche(word, playerPile, oldword) {
+    let newLetters = newLetter(word, oldword);	
+    let piocheOccurrences = {};
+    let lettresOccurrences = {};
+
+    playerPile.forEach(lettre => {
+        piocheOccurrences[lettre] = (piocheOccurrences[lettre] || 0) + 1;
+    });
+
+    newLetters.forEach(lettre => {
+        lettresOccurrences[lettre] = (lettresOccurrences[lettre] || 0) + 1;
+    });
+
+    Object.keys(lettresOccurrences).forEach(lettre => {
+        if (piocheOccurrences[lettre]) {
+            piocheOccurrences[lettre] -= lettresOccurrences[lettre];
+        }
+    });
+
+    let nouvellePioche = '';
+    Object.keys(piocheOccurrences).forEach(lettre => {
+        nouvellePioche += lettre.repeat(piocheOccurrences[lettre]);
+    });
+
+    return nouvellePioche.split('');
+}
+
+function playAgain(nameJoueur){
+	let playerPile
+	if (nameJoueur === "1") {
+        	playerPile = playerPile1;
+    	}else {
+        	playerPile = playerPile2;
+    	}
 	console.log("Veux tu continuer ? [oui/non]");
 	prompt.get(['answer'], function(err, result){
 		if (result.answer == "non"){
 			return;
 		}
 		else{
-			pioche(playerPile1, 1 , function(){askWord();});
+			pioche(playerPile, 1 , function(){askWord(nameJoueur);});
 		}
 	});
 }
 
 
-function askWord(callback){
+function askWord(nameJoueur,callback){
+	let grille, playerPile;
+	if (nameJoueur == "1"){
+		grille = grille1;
+		playePile = playerPile1;
+	}
+	else{
+		grille = grille2;
+		playerPile = playerPile2;
+	}
 	console.log("Voici ta grille")
-	console.log(grille1);
+	console.log(grille);
 	prompt.get(['ligne', 'mot'], function(err, result){
-		grille1[parseInt(result.ligne)-1] = result.mot;
-		console.log(grille1);
-		playerPile1 = removePioche(result.mot, playerPile1);
-		console.log(playerPile1);
+		oldWord = grille[parseInt(result.ligne)-1];
+		grille[parseInt(result.ligne)-1] = result.mot;
+		console.log(grille);
+		playerPile = removePioche(result.mot, playerPile, oldWord);
+		console.log(playerPile);
 	 	fs.writeFile('test.txt', result.mot, (err) => {
         	if (err) {
             	console.error(err);
         	} else {
-            	console.log('Le fichier a étécorrectement écrit.');
-		playAgain();
+            	console.log('Le fichier a été correctement écrit.');
+		playAgain(nameJoueur);
 		if (callback){
 			callback();
 		};
@@ -68,9 +122,22 @@ function askWord(callback){
 })
 }
 
-function tour(nameJoueur){
+function tour(nameJoueur,callback){
+	let playerPile;
 	console.log("C'est au joueur " + nameJoueur + "de jouer");
-	pioche(playerPile1, 6 , function(){askWord();});
+	if (nameJoueur == "1"){
+		playerPile = playerPile1;
+	}
+	else{
+	       playerPile = playerPile2;
+	}
+	pioche(playerPile, 6 , function(){askWord(nameJoueur);});
+	if (callback){
+		callback();
+	}
 }
 
-tour("Joueur1");
+function game(){
+	tour("1",function(){tour("2");});
+}
+game();
