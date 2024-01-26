@@ -81,7 +81,11 @@ function playAgain(nameJoueur){
 	console.log("Veux tu continuer ? [oui/non]");
 	prompt.get(['answer'], function(err, result){
 		if (result.answer == "non"){
-			return;
+			if(nameJoueur == "1"){
+				tour("2");}
+			else{
+				tour("1");
+			}
 		}
 		else{
 			pioche(playerPile, 1 , function(){askWord(nameJoueur);});
@@ -94,7 +98,7 @@ function askWord(nameJoueur,callback){
 	let grille, playerPile;
 	if (nameJoueur == "1"){
 		grille = grille1;
-		playePile = playerPile1;
+		playerPile = playerPile1;
 	}
 	else{
 		grille = grille2;
@@ -137,7 +141,4 @@ function tour(nameJoueur,callback){
 	}
 }
 
-function game(){
-	tour("1",function(){tour("2");});
-}
-game();
+tour("1");
