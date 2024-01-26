@@ -19,9 +19,7 @@ playerPile = []
 
 function drawLetters(arr, n) {
     for (let i = 0; i < n; i++){
-
         arr.push(randomItem(Letters))
-
     }
 }
 
