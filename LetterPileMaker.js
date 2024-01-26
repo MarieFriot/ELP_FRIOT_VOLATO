@@ -15,6 +15,19 @@ for (let i = 0; i < Apparitions.length; i++) {
 
 const randomItem = arr => arr.splice((Math.random() * arr.length) | 0, 1);
 
+playerPile = []
+
+function drawLetters(arr, n) {
+    for (let i = 0; i < n; i++){
+
+        arr.push(randomItem(Letters))
+
+    }
+}
+
 console.log(Letters.length + Letters)
 
 console.log(randomItem(Letters))
+
+drawLetters(playerPile, 4)
+console.log(playerPile)
