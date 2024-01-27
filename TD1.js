@@ -204,7 +204,8 @@ function askWord(nameJoueur,callback){
 			grille2 = grille;
 			playerPile2 = playerPile;
 		}
-	 	fs.writeFile('test.txt', result.mot, (err) => {
+		let log = `Au tour ${tourNumber}, le joueur ${nameJoueur} a écrit le mot '${result.mot}' sur la ligne ${result.ligne}\n`;
+	 	fs.appendFile('test.txt',log , (err) => {
         	if (err) {
             	console.error(err);
         	} else {
