@@ -18,6 +18,7 @@ const randomItem = arr => {
 	const index = (Math.random() * arr.length) | 0;
 	return arr.splice(index,1)[0];};
 
+
 function pioche1(arr,  callback){
 	Array.from({ length: 1 }).forEach(() => {
 		arr.push(randomItem(Letters));
@@ -30,7 +31,7 @@ function pioche1(arr,  callback){
 
 }
 
-function pioche(arr, callback) {
+function pioche(arr, nameJoueur, callback) {
 	if(tourNumber <2){
 		Array.from({ length: 6 }).forEach(() => {
 			arr.push(randomItem(Letters));
@@ -41,6 +42,8 @@ function pioche(arr, callback) {
 			callback();
 		  }
 	}else{
+		console.log("Voici l'état de ta pioche:")
+		console.log(arr)
 		console.log("Veux tu piocher 1 lettres [oui/non]. Si non dis moi les 3 lettres que tu veux échanger")
 		prompt.get(['Answer'], function(err, result){
 			let card;
@@ -48,13 +51,17 @@ function pioche(arr, callback) {
 				card = 1;
 			}else{
 				card = 3;
-				let lettres = result.Answer.split('');
-				arr = arr.filter(letter => !lettres.includes(letter));
-				
-		  	}
+				arr = removePioche(result.Answer, arr, ""); // cette modification se fait que localement 
+			}
 			Array.from({ length: card }).forEach(() => {
 				arr.push(randomItem(Letters));
 			});
+			if (nameJoueur == "1"){
+				playerPile1 = arr;
+			}
+			else{
+				playerPile2 = arr;
+			}
 			console.log("Voici ta pioche")
 			console.log(arr);
 			if (callback){
@@ -81,8 +88,8 @@ function newLetter(word, oldWord) {
 
 function removePioche(word, playerPile, oldword) {
     let newLetters = newLetter(word, oldword);	
-    let piocheOccurrences = {};
-    let lettresOccurrences = {};
+    let piocheOccurrences = {}; // Dictionnaire contenant le nombre d'occurence de chaques lettres qui étaient dans la playerPile
+    let lettresOccurrences = {}; //Dictionnaire contenant le nombre d'occurence des lettres ajoutées
 
     playerPile.forEach(lettre => {
         piocheOccurrences[lettre] = (piocheOccurrences[lettre] || 0) + 1;
@@ -106,25 +113,65 @@ function removePioche(word, playerPile, oldword) {
     return nouvellePioche.split('');
 }
 
+function Jarnac(nameJoueur, callback){
+	console.log('\n')
+	console.log("Au tour du joueur " + nameJoueur);
+	console.log("Veux tu faire un Jarnac ?[oui/non]");
+	prompt.get(['answer'], function(err,result){
+		if(result.answer == "oui"){
+			console.log("Quelle ligne veux tu lui voler ? (Donne son numéro)")
+			prompt.get(['ligne'], function(err,result){
+				let ligne = result.ligne;
+				console.log("Quelles lettre(s) de sa pioche veux tu lui voler ?")
+				prompt.get(['lettres'], function(err, result){
+					console.log("Quel mot et à quelle position veux-tu l'écrire?")
+					prompt.get(['mot', 'position'], function(err,result){
+					if (nameJoueur == "1"){
+						grille2[parseInt(ligne)-1]= "";
+						grille1[parseInt(result.position)-1] = result.mot;
+						removePioche(result.lettres, playerPile2, "");
+					}else{
+						grille1[parseInt(ligne)-1]= "";
+						grille2[parseInt(result.position)-1] = result.mot;
+						removePioche(result.lettres, playerPile1, "");
+					}
+					if (callback){
+						callback();
+					}
+
+					});
+				});
+			});
+		}else{
+		if (callback){
+			callback();
+		}}
+
+	});
+
+
+}
+
+
+
 function playAgain(nameJoueur){
-	let playerPile
-	if (nameJoueur === "1") {
-        	playerPile = playerPile1;
-    	}else {
-        	playerPile = playerPile2;
-    	}
 	console.log("Veux tu continuer ? [oui/non]");
 	prompt.get(['answer'], function(err, result){
 		if (result.answer == "non"){
 			tourNumber = tourNumber +1;
 			if(nameJoueur == "1"){
-				tour("2");}
-			else{
-				tour("1");
+				Jarnac("2", function(){tour("2")});
+			}else{
+				Jarnac("1", function(){tour("1")});
 			}
 		}
 		else{
-			pioche1(playerPile, function(){askWord(nameJoueur);});
+			if (nameJoueur === "1") {
+				pioche1(playerPile1, function(){askWord(nameJoueur);});
+			}else {
+				pioche1(playerPile2, function(){askWord(nameJoueur);});
+			}
+
 		}
 	});
 }
@@ -140,6 +187,7 @@ function askWord(nameJoueur,callback){
 		grille = grille2;
 		playerPile = playerPile2;
 	}
+	console.log('')
 	console.log("Voici ta grille")
 	console.log(grille);
 	prompt.get(['ligne', 'mot'], function(err, result){
@@ -167,24 +215,28 @@ function askWord(nameJoueur,callback){
 		};
         	}
     	});
-})
+	})
 }
 
+
+
+
+
 function tour(nameJoueur,callback){
-	let playerPile;
-	console.log("C'est au joueur " + nameJoueur + "de jouer");
+	console.log('\n');
 	if (nameJoueur == "1"){
-		playerPile = playerPile1;
+		pioche(playerPile1, nameJoueur, function(){askWord(nameJoueur);});
 	}
 	else{
-	       playerPile = playerPile2;
+		pioche(playerPile2, nameJoueur, function(){askWord(nameJoueur);});
+	    
 	}
-	
-	pioche(playerPile, function(){askWord(nameJoueur);});
 	if (callback){
 		callback();
 	}
 }
 
 var tourNumber = 0;
+console.log("Le jeu commence ! N'oubliez pas d'écrire les lettres en majuscule !")
+console.log("C'est au premier joueur de jouer !")
 tour("1");
