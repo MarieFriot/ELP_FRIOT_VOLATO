@@ -9,8 +9,8 @@ let Apparitions = [
 ];
 
 let Letters = Apparitions.flatMap(([amount, letter]) => Array.from({ length: amount }, () => letter))
-var grille1 = Array(8).fill("")
-var grille2 = Array(8).fill("")
+var grille1 = Array(2).fill("")
+var grille2 = Array(2).fill("")
 var playerPile1 = []
 var playerPile2 = []
 
@@ -112,9 +112,38 @@ function removePioche(word, playerPile, oldword) {
 
     return nouvellePioche.split('');
 }
+function score(grille){
+	// Utiliser map pour créer un tableau de points pour chaque mot (taille au carré)
+	const pointsParMot = grille.map(mot => Math.pow(mot.length, 2));
+	// Utiliser reduce pour calculer la somme totale des points
+	const sommePoints = pointsParMot.reduce((total, points) => total + points, 0);
+	return sommePoints;
+}
+
+function finPartie(grille){
+	let score1, score2;
+	if ( grille.every(mot => mot.length >= 3)){
+		console.log("C'est la fin de la partie !")
+		score1 = score(grille1);
+		score2 = score(grille2);
+		console.log("Le joueur 1 a " + score1 + " points et le joueur 2 en a " + score2)
+		if (score1 >score2){
+			console.log("Le joueur 1 a gagné !")
+		}
+		else if(score2 > score1){
+			conscole.log("Le joueur 2 a gagné!")
+		}else{
+			console.log("Egalité!")
+		}
+		return true;
+	}else{
+		return false
+	}
+}
 
 function Jarnac(nameJoueur, callback){
-	console.log('\n')
+	let fin
+	console.log('-------------------------------------------------------\n')
 	console.log("Au tour du joueur " + nameJoueur);
 	console.log("Veux tu faire un Jarnac ?[oui/non]");
 	prompt.get(['answer'], function(err,result){
@@ -124,61 +153,70 @@ function Jarnac(nameJoueur, callback){
 				let ligne = result.ligne;
 				console.log("Quelles lettre(s) de sa pioche veux tu lui voler ?")
 				prompt.get(['lettres'], function(err, result){
+					let lettres = result.lettres
+					console.log("Pour rapel voici ta grille")
+					if (nameJoueur == "1"){
+						console.log(grille1);
+					}else{
+						console.log(grille2);
+					}
 					console.log("Quel mot et à quelle position veux-tu l'écrire?")
 					prompt.get(['mot', 'position'], function(err,result){
 					if (nameJoueur == "1"){
 						grille2[parseInt(ligne)-1]= "";
 						grille1[parseInt(result.position)-1] = result.mot;
-						removePioche(result.lettres, playerPile2, "");
+						fin =finPartie(grille1);
+						playerPile2 = removePioche(lettres, playerPile2, "");
 					}else{
 						grille1[parseInt(ligne)-1]= "";
 						grille2[parseInt(result.position)-1] = result.mot;
-						removePioche(result.lettres, playerPile1, "");
+						fin =finPartie(grille2);
+						playerPile1 =removePioche(lettres, playerPile1, "");
 					}
-					if (callback){
-						callback();
-					}
+					if (!fin){
+						if (callback){
+							callback();
+					}}
 
 					});
 				});
 			});
 		}else{
-		if (callback){
-			callback();
-		}}
+		if (!fin){
+			if (callback){
+				callback();
+			}}
+		}
 
 	});
 
 
 }
 
+
+function nextPlayer(nameJoueur){
+	tourNumber = tourNumber +1;
+	if(nameJoueur == "1"){
+		Jarnac("2", function(){tour("2")});
+	}else{
+		Jarnac("1", function(){tour("1")});
+	}
+}
 
 
 function playAgain(nameJoueur){
-	console.log("Veux tu continuer ? [oui/non]");
-	prompt.get(['answer'], function(err, result){
-		if (result.answer == "non"){
-			tourNumber = tourNumber +1;
-			if(nameJoueur == "1"){
-				Jarnac("2", function(){tour("2")});
-			}else{
-				Jarnac("1", function(){tour("1")});
-			}
+		if (nameJoueur === "1") {
+			pioche1(playerPile1, function(){askWord(nameJoueur);});
+		}else {
+			pioche1(playerPile2, function(){askWord(nameJoueur);});
 		}
-		else{
-			if (nameJoueur === "1") {
-				pioche1(playerPile1, function(){askWord(nameJoueur);});
-			}else {
-				pioche1(playerPile2, function(){askWord(nameJoueur);});
-			}
-
-		}
-	});
 }
+
 
 
 function askWord(nameJoueur,callback){
 	let grille, playerPile;
+	let fin;
 	if (nameJoueur == "1"){
 		grille = grille1;
 		playerPile = playerPile1;
@@ -190,41 +228,49 @@ function askWord(nameJoueur,callback){
 	console.log('')
 	console.log("Voici ta grille")
 	console.log(grille);
-	prompt.get(['ligne', 'mot'], function(err, result){
-		oldWord = grille[parseInt(result.ligne)-1];
-		grille[parseInt(result.ligne)-1] = result.mot;
-		console.log(grille);
-		playerPile = removePioche(result.mot, playerPile, oldWord);
-		console.log(playerPile);
-		if (nameJoueur == "1"){
-			grille1 = grille;
-			playerPile1 = playerPile;
+	console.log("Veux tu jouer [oui/non] ?")
+	prompt.get(['answer'], function(err, result){
+		if(result.answer == "non"){
+			nextPlayer(nameJoueur);
+		}else{
+			console.log("Dis moi sur quelle ligne tu veux écrire ton mot.")
+			prompt.get(['ligne', 'mot'], function(err, result){
+				oldWord = grille[parseInt(result.ligne)-1];
+				grille[parseInt(result.ligne)-1] = result.mot;
+				console.log(grille);
+				playerPile = removePioche(result.mot, playerPile, oldWord);
+
+				if (nameJoueur == "1"){
+					grille1 = grille;
+					playerPile1 = playerPile;
+					fin = finPartie(grille1);
+				}
+				else{
+					grille2 = grille;
+					playerPile2 = playerPile;
+					fin = finPartie(grille2);
+				}
+				let log = `Au tour ${tourNumber}, le joueur ${nameJoueur} a écrit le mot '${result.mot}' sur la ligne ${result.ligne}\n`;
+				fs.appendFile('test.txt',log , (err) => {
+					if (err) {
+						console.error(err);
+					}
+				});
+				console.log("")
+				if (!fin){
+					console.log("Tu peux rejouer si tu veux !")
+					playAgain(nameJoueur);
+				}
+			});
 		}
-		else{
-			grille2 = grille;
-			playerPile2 = playerPile;
-		}
-		let log = `Au tour ${tourNumber}, le joueur ${nameJoueur} a écrit le mot '${result.mot}' sur la ligne ${result.ligne}\n`;
-	 	fs.appendFile('test.txt',log , (err) => {
-        	if (err) {
-            	console.error(err);
-        	} else {
-            	console.log('Le fichier a été correctement écrit.');
-		playAgain(nameJoueur);
-		if (callback){
-			callback();
-		};
-        	}
-    	});
-	})
+	});
 }
 
 
 
 
-
 function tour(nameJoueur,callback){
-	console.log('\n');
+	console.log('---------------------------------------------------\n');
 	if (nameJoueur == "1"){
 		pioche(playerPile1, nameJoueur, function(){askWord(nameJoueur);});
 	}
