@@ -18,8 +18,6 @@ function pioche(tourNumber,arr, nameJoueur, callback) {
 		Array.from({ length: 6 }).forEach(() => {
 			arr.push(randomItem(Letters));
 		});
-		console.log("Voici ta pioche")
-		console.log(arr);
 		if (callback){
 			callback(nameJoueur, arr);
 		  }
@@ -38,8 +36,6 @@ function pioche(tourNumber,arr, nameJoueur, callback) {
 			Array.from({ length: card }).forEach(() => {
 				arr.push(randomItem(Letters));
 			});
-			//console.log("Voici ta pioche")
-			//console.log(arr);
 			if (callback){
 				callback(nameJoueur, arr);
 			}
@@ -51,8 +47,6 @@ function pioche1(arr, nameJoueur,  callback){
 	Array.from({ length: 1 }).forEach(() => {
 		arr.push(randomItem(Letters));
 	});
-	console.log("Voici ta pioche")
-	console.log(arr);
 	if (callback){
 		callback(nameJoueur, arr);
 	}
