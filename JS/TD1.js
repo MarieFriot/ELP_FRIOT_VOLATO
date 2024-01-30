@@ -131,7 +131,7 @@ function finPartie(grille){
 			console.log("Le joueur 1 a gagné !")
 		}
 		else if(score2 > score1){
-			conscole.log("Le joueur 2 a gagné!")
+			console.log("Le joueur 2 a gagné!")
 		}else{
 			console.log("Egalité!")
 		}
