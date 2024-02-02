@@ -73,8 +73,6 @@ function Jarnac(nameJoueur, callback){
 						}else{
 							grille1[ligneVolée-1]= "";
 							grille2[ligne-1] = mot;
-							console.log(mot)
-							console.log(grille2)
 							fin = modFin.finPartie("2", grille1, grille2);
 							playerPile1 = modPioche.removePioche(lettres, playerPile1, "");
 						}
@@ -124,7 +122,8 @@ function askWord(nameJoueur, playerPile){
 			nextPlayer(nameJoueur);
 		}else{
 			    console.log("Dis moi sur quelle ligne tu veux écrire ton mot.")
-                modEntree.getLineWord(grille, playerPile).then(({ grille, playerPile }) => {
+                modEntree.getLineWord(grille, playerPile).then((result) => {
+					const {grille , playerPile ,ligne, mot} = result;
                     if (nameJoueur == "1") {
                         grille1 = grille;
                         playerPile1 = playerPile;
@@ -136,8 +135,7 @@ function askWord(nameJoueur, playerPile){
                         console.log(playerPile2);
                         fin = modFin.finPartie("2", grille1, grille2);
                     }
-
-                    let log = `Au tour ${tourNumber}, le joueur ${nameJoueur} a écrit le mot '${result.mot}' sur la ligne ${result.ligne}\n`;
+                    let log = `Au tour ${tourNumber}, le joueur ${nameJoueur} a écrit le mot '${mot}' sur la ligne ${ligne}\n`;
                     fs.appendFile('test.txt', log, (err) => {
                         if (err) {
                             console.error(err);

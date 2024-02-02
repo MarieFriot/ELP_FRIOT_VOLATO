@@ -13,7 +13,6 @@ function finPartie(nameJoueur, grille1, grille2){
     }else{
         grille = grille2;
     }
-    console.log(grille)
 	if ( grille.every(mot => mot.length >= 3)){
 		console.log("C'est la fin de la partie !")
 		score1 = score(grille1);

@@ -21,7 +21,8 @@ function getLineWord(grille, playerPile) {
                 var oldWord = grille[lineNumber - 1];
                 grille[lineNumber - 1] = result.mot;
                 playerPile = modPioche.removePioche(result.mot, playerPile, oldWord);
-                resolve({ grille, playerPile });
+                let mot = result.mot;
+                resolve({ grille : grille, playerPile :playerPile, mot : mot , ligne : lineNumber });
             }else {
                 console.log("Le numéro de ligne doit être compris entre 1 et 8 et vous devez utilisez les lettres disponibles. Veuillez réessayer.");
                 // Appel récursif pour demander à nouveau à l'utilisateur de saisir le numéro de ligne.
