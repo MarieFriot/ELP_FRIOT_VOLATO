@@ -32,6 +32,8 @@ function pioche(tourNumber,arr, nameJoueur, callback) {
 			}else{
 				card = 3;
 				arr = removePioche(result.Answer, arr, ""); // cette modification se fait que localement 
+				var newLetters = result.Answer.split('');
+               			Letters = Letters.concat(newLetters);
 			}
 			Array.from({ length: card }).forEach(() => {
 				arr.push(randomItem(Letters));
