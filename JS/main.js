@@ -136,7 +136,7 @@ function askWord(nameJoueur, playerPile){
                         fin = modFin.finPartie("2", grille1, grille2);
                     }
                     let log = `Au tour ${tourNumber}, le joueur ${nameJoueur} a écrit le mot '${mot}' sur la ligne ${ligne}\n`;
-                    fs.appendFile('test.txt', log, (err) => {
+                    fs.appendFile('logs.txt', log, (err) => {
                         if (err) {
                             console.error(err);
                         }
