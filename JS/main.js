@@ -2,12 +2,13 @@ var prompt  = require('prompt');
 var fs = require('fs');
 const modPioche = require('./pioche.js');
 const modFin = require('./finPartie.js');
-const modEntree = require('./entreeJoueur.js')
+const modEntree = require('./entreeJoueur.js');
+const { log } = require('console');
 
 prompt.start();
 
-var grille1 = Array(2).fill("")
-var grille2 = Array(2).fill("")
+var grille1 = Array(8).fill("")
+var grille2 = Array(8).fill("")
 var playerPile1 = []
 var playerPile2 = []
 
@@ -47,13 +48,14 @@ function Jarnac(nameJoueur, callback){
 				}
 				console.log("Quelles lettre(s) de sa pioche veux tu lui voler ?")
 				modEntree.getLettresJarnac(playerPile).then((lettres) => {
+					let newlettres;
 					console.log("Pour rapel voici ta grille")
 					if (nameJoueur == "1"){
 						grille = grille1;
-						lettres = lettres + grille2[ligneVolée - 1];
+						newlettres = lettres + grille2[ligneVolée - 1];
 					}else{
 						grille = grille2;
-						lettres = lettres + grille1[ligneVolée - 1];
+						newlettres = lettres + grille1[ligneVolée - 1];
 						console.log(ligneVolée)
 						console.log(grille[ligneVolée -1]);
 					}
@@ -61,12 +63,10 @@ function Jarnac(nameJoueur, callback){
 					console.log(grille)
 					console.log("Quel mot et à quelle position veux-tu l'écrire?")
 					console.log(lettres)
-					modEntree.getLineWordJarnac(grille, lettres.split('')).then((result) => {
+					modEntree.getLineWordJarnac(grille, newlettres.split('')).then((result) => {
 						const {ligne, mot} = result;
-						console.log(ligne);
-						console.log(mot);
 						if (nameJoueur == "1"){
-							grille2[ligneVolée]= "";
+							grille2[ligneVolée-1]= "";
 							grille1[ligne -1] = mot;
 							fin = modFin.finPartie("1", grille1, grille2);
 							playerPile2 = modPioche.removePioche(lettres, playerPile2, "");

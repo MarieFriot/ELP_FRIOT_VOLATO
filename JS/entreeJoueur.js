@@ -1,23 +1,10 @@
 var prompt  = require('prompt');
 const modPioche = require('./pioche.js');
 
-function newLetter(word, oldWord) {
-    const newLetters = [];
-    const oldWordSet = new Set(oldWord);
 
-    for (let i = 0; i < word.length; i++) {
-        const letter = word[i];
-        if (!oldWordSet.has(letter)) {
-            newLetters.push(letter);
-        }
-    }
-
-    return newLetters;
-}
 
 function motJuste(word, oldWord, playerPile) {
-    const newLetters = newLetter(word, oldWord);
-    console.log(newLetters)
+    const newLetters = modPioche.newLetter(word, oldWord);
     // Vérifiez chaque nouvelle lettre et sa quantité dans playerPile
     return newLetters.every(letter => {
         const newLetterCount = newLetters.filter(l => l === letter).length;
@@ -30,12 +17,10 @@ function getLineWord(grille, playerPile) {
     return new Promise((resolve) => {
         prompt.get(['ligne', 'mot'], function (err, result) {
             var lineNumber = parseInt(result.ligne);
-            if ((lineNumber >= 0 && lineNumber < grille.length) && motJuste(result.mot, grille[lineNumber-1], playerPile)){
+            if ((lineNumber > 0 && lineNumber <= grille.length) && result.mot.length >= 3 && motJuste(result.mot, grille[lineNumber-1], playerPile)){
                 var oldWord = grille[lineNumber - 1];
                 grille[lineNumber - 1] = result.mot;
-                console.log(grille);
                 playerPile = modPioche.removePioche(result.mot, playerPile, oldWord);
-                console.log(playerPile);
                 resolve({ grille, playerPile });
             }else {
                 console.log("Le numéro de ligne doit être compris entre 1 et 8 et vous devez utilisez les lettres disponibles. Veuillez réessayer.");
@@ -51,9 +36,7 @@ function getLineWordJarnac(grille, lettres) {
         prompt.get(['ligne', 'mot'], function (err, result) {
             var lineNumber = parseInt(result.ligne);
             var mot = result.mot;
-            if ((lineNumber >= 0 && lineNumber < grille.length) && grille[lineNumber -1]== '' && motJuste(mot,'',lettres)){
-                console.log(mot);
-                console.log(lineNumber);
+            if ((lineNumber > 0 && lineNumber <= grille.length) && grille[lineNumber -1]== '' && motJuste(mot,'',lettres)){
                 resolve({ ligne : lineNumber,  mot :mot});
             }else {
                 console.log("Le numéro de ligne doit être compris entre 1 et 8 et vous devez utilisez les volées. Veuillez réessayer.");
@@ -68,7 +51,7 @@ function getLineJarnac(grille) {
     return new Promise((resolve) => {
         prompt.get(['ligne'], function (err, result) {
             var lineNumber = parseInt(result.ligne);
-            if (lineNumber >= 0 && lineNumber < grille.length){
+            if (lineNumber > 0 && lineNumber <= grille.length){
                 resolve(lineNumber);
             }else {
                 console.log("Le numéro de ligne doit être compris entre 1 et 8 et vous devez utilisez les lettres disponibles. Veuillez réessayer.");
@@ -84,7 +67,6 @@ function getLettresJarnac(playerPile){
         prompt.get(['lettres'], function (err, result) {
             var lettres = result.lettres
 			if (motJuste(lettres, '', playerPile)) {
-                console.log(lettres)
                 resolve(lettres);
             }else{
                 console.log("Tu dois indiquée des lettres qui sont dans la pioche de l'autres joueurs.");

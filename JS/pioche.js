@@ -53,18 +53,42 @@ function pioche1(arr, nameJoueur,  callback){
 }
 
 function newLetter(word, oldWord) {
-    const newLetters = [];
-    const wordArray = word.split('');
-    const oldWordSet = new Set(oldWord);;
+    let wordOccurrences = {}; // Dictionnaire contenant le nombre d'occurence de chaques lettres qui étaient dans la playerPile
+    let oldWordOccurrences = {}; //Dictionnaire contenant le nombre d'occurence des lettres ajoutées
+    let newLetters = [];
 
-    wordArray.forEach(letter => {
-        if (!oldWordSet.has(letter)) {
-            newLetters.push(letter);
-        }
-    });
+    if(oldWord == ''){
+        newLetters = word.split('')
+    }else{
+        word = word.split('')
+        oldWord = oldWord.split('')
+
+        word.forEach(lettre => {
+            wordOccurrences[lettre] = (wordOccurrences[lettre] || 0) + 1;
+        });
+
+
+        oldWord.forEach(lettre => {
+            oldWordOccurrences[lettre] = (oldWordOccurrences[lettre] || 0) + 1;
+        });
+
+       
+        Object.keys(wordOccurrences).forEach(lettre => {
+            if (oldWordOccurrences[lettre]>0) {
+                wordOccurrences[lettre] -= oldWordOccurrences[lettre];
+            }
+        });
+        
+        Object.keys(wordOccurrences).forEach(lettre => {
+            for (let i = 0; i < wordOccurrences[lettre]; i++) {
+                newLetters.push(lettre);
+            }
+        });
+    }
 
     return newLetters;
 }
+
 
 function removePioche(word, playerPile, oldword) {
     let newLetters = newLetter(word, oldword);	
@@ -91,7 +115,7 @@ function removePioche(word, playerPile, oldword) {
     });
 
     playerPile = nouvellePioche.split('');
-
+   
     return playerPile;
 
 }
@@ -100,5 +124,6 @@ module.exports = {
     pioche,
     removePioche,
     pioche1,
-    randomItem
+    randomItem,
+    newLetter
 };
